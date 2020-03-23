@@ -7,16 +7,27 @@ class Block{
         this.data = data;
         this.previousHash = previousHash;
         this.hash = this.calculateHash();
+        this.nonce = 0;
     }
 
     calculateHash(){
-        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data)).toString();
+        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
+    }
+
+    mineBlock(difficulty){
+        while(this.hash.substring(0,difficulty) != Array(difficulty + 1).join("0")){
+            this.nonce++;
+            this.hash = this.calculateHash();
+        }
+
+        console.log("Block mined: "+ this.hash);
     }
 }
 
 class Blockchain{
     constructor(){
         this.chain = [this.createGenesisBlock()];
+        this.difficulty = 3;
     }
 
     createGenesisBlock(){
@@ -29,7 +40,7 @@ class Blockchain{
 
     addBlock(newBlock){
         newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.hash = newBlock.calculateHash();
+        newBlock.mineBlock(this.difficulty);
         this.chain.push(newBlock);
     }
 
@@ -52,14 +63,9 @@ class Blockchain{
 }
 
 let myCoin = new Blockchain();
+console.log("Mining block 1....");
 myCoin.addBlock(new Block(1,"21/03/2020",{amount : 34}));
+console.log("Mining block 2....");
 myCoin.addBlock(new Block(2,"22/03/2020",{amount : 3}));
+console.log("Mining block 3....");
 myCoin.addBlock(new Block(3,"23/03/2020",{amount : 13}));
-
-console.log('Is Blackchain Valid? ' + myCoin.isChainValid());
-
-myCoin.chain[1].data = {amount : 3000};
-myCoin.chain[1].hash = myCoin.chain[1].calculateHash();
-
-console.log('Is Blackchain Valid? ' + myCoin.isChainValid());
-//console.log(JSON.stringify(myCoin, null, 4));
