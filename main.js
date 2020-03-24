@@ -62,6 +62,9 @@ class Blockchain{
     }
 }
 
+//TODO: Rollback mechanism
+//TODO: networked blocks
+
 let myCoin = new Blockchain();
 console.log("Mining block 1....");
 myCoin.addBlock(new Block(1,"21/03/2020",{amount : 34}));
